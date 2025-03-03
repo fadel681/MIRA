@@ -44,17 +44,23 @@ st.markdown(
     }}
     .stHeader {{
         color: #000000; /* Noir pour le texte de l'en-tête */
-        font-size: 2em; /* Taille de police pour l'en-tête */
+        font-size: 3em; /* Taille de police pour l'en-tête */
         font-weight: bold; /* En-tête en gras */
         text-align: center; /* Centrer l'en-tête */
         margin-top: 20px; /* Marge supérieure pour espacer l'en-tête */
         margin-bottom: 20px; /* Marge inférieure pour espacer l'en-tête */
+        position: fixed; /* Fixer l'en-tête */
+        width: 100%; /* Prendre toute la largeur */
+        background-color: rgba(255, 255, 255, 0.8); /* Fond blanc avec transparence */
+        padding: 10px; /* Espacement intérieur */
+        z-index: 1000; /* Assurer que l'en-tête soit au-dessus du contenu */
     }}
     .stFormContainer {{
         display: flex;
         justify-content: flex-start; /* Aligner à gauche */
-        align-items: center;
+        align-items: flex-start; /* Aligner en haut */
         height: 100vh; /* Hauteur de la fenêtre */
+        padding-top: 100px; /* Espacement en haut pour éviter l'en-tête */
         padding-left: 20px; /* Espacement à gauche */
     }}
     .stForm {{
@@ -86,7 +92,7 @@ st.markdown(
 )
 
 # En-tête de l'application
-st.markdown("<div class='stHeader'> MIRA </div>", unsafe_allow_html=True)
+st.markdown("<div class='stHeader'>MIRA</div>", unsafe_allow_html=True)
 st.markdown("<div class='stHeader'>Bienvenue sur notre application de prédiction de crédit !</div>", unsafe_allow_html=True)
 
 # Formulaire de saisie des données
