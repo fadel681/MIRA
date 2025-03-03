@@ -113,7 +113,7 @@ with st.form("Formulaire de saisie"):
         proba = model.predict_proba(input_data)[:, 1]
 
         st.session_state['prediction_score'] = result[0]
-        st.session_state['prediction_status'] = "Approuvé" si result[0] == 1 sinon "Refusé"
+        st.session_state['prediction_status'] = "Approuvé" if result[0] ==  else "Refusé"
         st.session_state['prediction_model'] = "Régression Logistique"
         st.session_state['prediction_proba'] = proba
 st.markdown("</div>", unsafe_allow_html=True)
