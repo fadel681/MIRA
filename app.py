@@ -14,7 +14,7 @@ for v in vars_sessions:
         st.session_state[v] = None
 
 # Charger le logo et l'image d'arrière-plan
-logo_path = os.path.join('media', 'capgemini-symbol.png')
+logo_path = os.path.join('media', 'Capgemini-Symbol.png')
 background_path = os.path.join('media', 'capgemini_streamlit.jfif')
 
 logo = Image.open(logo_path)
