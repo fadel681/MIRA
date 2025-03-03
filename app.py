@@ -14,7 +14,7 @@ for v in vars_sessions:
         st.session_state[v] = None
 
 # Charger le logo et l'image d'arrière-plan
-logo_path = os.path.join('media', 'Capgemini-Symbol.png')
+logo_path = os.path.join('media', 'capgemini-symbol.png')
 background_path = os.path.join('media', 'capgemini_streamlit.jfif')
 
 logo = Image.open(logo_path)
@@ -50,6 +50,12 @@ st.markdown(
         margin-top: 20px; /* Marge supérieure pour espacer l'en-tête */
         margin-bottom: 20px; /* Marge inférieure pour espacer l'en-tête */
     }}
+    .stFormContainer {{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh; /* Hauteur de la fenêtre */
+    }}
     .stForm {{
         background-color: rgba(51, 51, 51, 0.8); /* Fond noir clair avec transparence pour le formulaire */
         padding: 20px; /* Espacement intérieur pour le formulaire */
@@ -81,6 +87,7 @@ st.markdown("<div class='stHeader'>Application de prédiction de crédit</div>",
 st.markdown("<div class='stHeader'>Bienvenue sur notre application de prédiction de crédit !</div>", unsafe_allow_html=True)
 
 # Formulaire de saisie des données
+st.markdown("<div class='stFormContainer'>", unsafe_allow_html=True)
 with st.form("Formulaire de saisie"):
     st.write("Formulaire")
     age = st.number_input("Age")
@@ -106,12 +113,14 @@ with st.form("Formulaire de saisie"):
         proba = model.predict_proba(input_data)[:, 1]
 
         st.session_state['prediction_score'] = result[0]
-        st.session_state['prediction_status'] = "Approuvé" if result[0] == 1 else "Refusé"
+        st.session_state['prediction_status'] = "Approuvé" si result[0] == 1 sinon "Refusé"
         st.session_state['prediction_model'] = "Régression Logistique"
         st.session_state['prediction_proba'] = proba
+st.markdown("</div>", unsafe_allow_html=True)
 
 # Formulaire de réponse
 if st.session_state['prediction_score'] is not None:
+    st.markdown("<div class='stFormContainer'>", unsafe_allow_html=True)
     with st.form("Formulaire de reponse"):
         st.write("Resultat")
         cols = st.columns(3)
@@ -120,3 +129,4 @@ if st.session_state['prediction_score'] is not None:
         modele = cols[2].text(st.session_state['prediction_model'])
         commentaire = st.text_input("Commentaire")
         validate = st.form_submit_button("Envoyer")
+    st.markdown("</div>", unsafe_allow_html=True)
