@@ -57,11 +57,10 @@ st.markdown(
     }}
     .stFormContainer {{
         display: flex;
-        justify-content: flex-start; /* Aligner à gauche */
+        justify-content: center; /* Centrer horizontalement */
         align-items: flex-start; /* Aligner en haut */
         height: 100vh; /* Hauteur de la fenêtre */
-        padding-top: 100px; /* Espacement en haut pour éviter l'en-tête */
-        padding-left: 20px; /* Espacement à gauche */
+        padding-top: 150px; /* Espacement en haut pour éviter l'en-tête */
     }}
     .stForm {{
         background-color: rgba(51, 51, 51, 0.8); /* Fond noir clair avec transparence pour le formulaire */
