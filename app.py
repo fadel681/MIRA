@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 from model_utils import load_model, predict
 from PIL import Image
-import base64
 import os
 
 # Charger le modèle
@@ -13,91 +12,25 @@ for v in vars_sessions:
     if v not in st.session_state:
         st.session_state[v] = None
 
-# Charger le logo et l'image d'arrière-plan
+# Charger le logo
 logo_path = os.path.join('media', 'Capgemini-Symbol.png')
-background_path = os.path.join('media', 'capgemini_streamlit.jfif')
-
 logo = Image.open(logo_path)
-background = background_path
-
-# Convertir l'image d'arrière-plan en base64
-with open(background, "rb") as image_file:
-    encoded_string = base64.b64encode(image_file.read()).decode()
 
 # Afficher le logo réduit à gauche
 st.sidebar.image(logo, use_container_width=True, width=100)
 
-# Appliquer l'image d'arrière-plan à toute la page
-st.markdown(
-    f"""
-    <style>
-    .stApp {{
-        background-image: url("data:image/jpg;base64,{encoded_string}");
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        color: #ffffff; /* Blanc pour le texte */
-        font-family: 'Arial', sans-serif; /* Police plus moderne */
-    }}
-    .stSidebar {{
-        background-color: #ffffff; /* Blanc */
-    }}
-    .stHeader {{
-        color: #000000; /* Noir pour le texte de l'en-tête */
-        font-size: 3em; /* Taille de police pour l'en-tête */
-        font-weight: bold; /* En-tête en gras */
-        text-align: center; /* Centrer l'en-tête */
-        margin-top: 20px; /* Marge supérieure pour espacer l'en-tête */
-        margin-bottom: 20px; /* Marge inférieure pour espacer l'en-tête */
-        position: fixed; /* Fixer l'en-tête */
-        width: 100%; /* Prendre toute la largeur */
-        background-color: rgba(255, 255, 255, 0.8); /* Fond blanc avec transparence */
-        padding: 10px; /* Espacement intérieur */
-        z-index: 1000; /* Assurer que l'en-tête soit au-dessus du contenu */
-    }}
-    .stFormContainer {{
-        display: flex;
-        justify-content: center; /* Centrer horizontalement */
-        align-items: flex-start; /* Aligner en haut */
-        height: 100vh; /* Hauteur de la fenêtre */
-        padding-top: 150px; /* Espacement en haut pour éviter l'en-tête */
-    }}
-    .stForm {{
-        background-color: rgba(51, 51, 51, 0.8); /* Fond noir clair avec transparence pour le formulaire */
-        padding: 20px; /* Espacement intérieur pour le formulaire */
-        border-radius: 10px; /* Coins arrondis pour le formulaire */
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); /* Ombre pour le formulaire */
-        color: #ffffff; /* Blanc pour le texte du formulaire */
-        max-width: 600px; /* Largeur maximale du formulaire */
-        width: 100%; /* Largeur du formulaire */
-    }}
-    .stForm input, .stForm label {{
-        color: #ffffff; /* Blanc pour les entrées et les labels */
-    }}
-    .stForm button {{
-        background-color: #000000; /* Noir pour le bouton */
-        color: #ffffff; /* Blanc pour le texte du bouton */
-        border: none; /* Pas de bordure */
-        padding: 10px 20px; /* Espacement intérieur pour le bouton */
-        border-radius: 5px; /* Coins arrondis pour le bouton */
-        cursor: pointer; /* Curseur en forme de main */
-    }}
-    .stForm button:hover {{
-        background-color: #333333; /* Noir clair pour le bouton au survol */
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# Appliquer le CSS pour styliser l'application
 
 # En-tête de l'application
-st.markdown("<div class='stHeader'>MIRA</div>", unsafe_allow_html=True)
-st.markdown("<div class='stHeader'>Bienvenue sur notre application de prédiction de crédit !</div>", unsafe_allow_html=True)
+st.markdown("# Predictive Tools of Credit Scoring")
+   
+
+# Conteneur principal
+st.markdown("<div class='stFormContainer'>", unsafe_allow_html=True)
 
 # Formulaire de saisie des données
-st.markdown("<div class='stFormContainer'>", unsafe_allow_html=True)
-with st.form("Formulaire de saisie"):
-    st.write("Formulaire")
+with st.form("Formulaire de saisie", clear_on_submit=True):
+    st.markdown("## Formulaire")
     age = st.number_input("Age")
     anciennete = st.number_input("Anciennete")
     notation_pret = st.selectbox("notation_pret", options=["A", "B", "C", "D", "E"], index=0)
@@ -124,17 +57,31 @@ with st.form("Formulaire de saisie"):
         st.session_state['prediction_status'] = "Approuvé" if result[0] else "Refusé"
         st.session_state['prediction_model'] = "Régression Logistique"
         st.session_state['prediction_proba'] = proba
-st.markdown("</div>", unsafe_allow_html=True)
 
-# Formulaire de réponse
+# Afficher les résultats à droite
 if st.session_state['prediction_score'] is not None:
-    st.markdown("<div class='stFormContainer'>", unsafe_allow_html=True)
-    with st.form("Formulaire de reponse"):
-        st.write("Resultat")
-        cols = st.columns(3)
-        score = cols[0].text(f"score: {st.session_state['prediction_proba']}")
-        status = cols[1].text(f"status: {st.session_state['prediction_status']}")
-        modele = cols[2].text(st.session_state['prediction_model'])
-        commentaire = st.text_input("Commentaire")
-        validate = st.form_submit_button("Envoyer")
+    st.markdown("<div class='stResults'>", unsafe_allow_html=True)
+    st.write("Résultats")
+    st.write(f"Score: {st.session_state['prediction_proba']}")
+    st.write(f"Status: {st.session_state['prediction_status']}")
+    st.write(f"Modèle: {st.session_state['prediction_model']}")
+    commentaire = st.text_input("Commentaire")
+    validate = st.button("Envoyer")
     st.markdown("</div>", unsafe_allow_html=True)
+
+st.markdown("</div>", unsafe_allow_html=True)
+page_bg_css = """
+    <style>
+    [data-testid="stAppViewContainer"] {
+        background-color:rgb(0, 83, 139);
+        color: white; /* Pour rendre le texte lisible sur un fond sombre */
+         font-weight: bold;
+    }
+    [data-testid="stForm"] label, [data-testid="stForm"] input, [data-testid="stForm"] textarea {
+    color: black; /* Mettre le texte des formulaires en noir */
+     font-weight: bold;
+    }
+
+    </style>
+    """
+st.markdown(page_bg_css, unsafe_allow_html=True)
