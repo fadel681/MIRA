@@ -52,9 +52,10 @@ st.markdown(
     }}
     .stFormContainer {{
         display: flex;
-        justify-content: center;
+        justify-content: flex-start; /* Aligner à gauche */
         align-items: center;
         height: 100vh; /* Hauteur de la fenêtre */
+        padding-left: 20px; /* Espacement à gauche */
     }}
     .stForm {{
         background-color: rgba(51, 51, 51, 0.8); /* Fond noir clair avec transparence pour le formulaire */
@@ -62,6 +63,8 @@ st.markdown(
         border-radius: 10px; /* Coins arrondis pour le formulaire */
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); /* Ombre pour le formulaire */
         color: #ffffff; /* Blanc pour le texte du formulaire */
+        max-width: 600px; /* Largeur maximale du formulaire */
+        width: 100%; /* Largeur du formulaire */
     }}
     .stForm input, .stForm label {{
         color: #ffffff; /* Blanc pour les entrées et les labels */
@@ -113,7 +116,7 @@ with st.form("Formulaire de saisie"):
         proba = model.predict_proba(input_data)[:, 1]
 
         st.session_state['prediction_score'] = result[0]
-        st.session_state['prediction_status'] = "Approuvé" if result[0]  else "Refusé"
+        st.session_state['prediction_status'] = "Approuvé" if result[0] else "Refusé"
         st.session_state['prediction_model'] = "Régression Logistique"
         st.session_state['prediction_proba'] = proba
 st.markdown("</div>", unsafe_allow_html=True)
