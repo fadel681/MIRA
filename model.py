@@ -1,118 +1,60 @@
-import streamlit as st
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
 import pandas as pd
-from model import load_model, predict
-from PIL import Image
-import base64
+import joblib
+
+# Charger les données et entraîner le modèle
+def train_and_save_model():
+    # Charger les données à partir d'un fichier CSV
+    try:
+        data = pd.read_csv("C:\\Users\\fdiakhat\\OneDrive - Capgemini\\Desktop\\MIRA\\Test1\\clean_RiskCredit.csv", sep=';')
+    except FileNotFoundError:
+        print("Le fichier spécifié est introuvable. Veuillez vérifier le chemin du fichier.")
+        return
+
+    # Supprimer les valeurs manquantes
+    data.dropna(inplace=True)
+
+    # Définir les colonnes
+    numeric_features = ['age', 'revenu', 'anciennete', 'montant_pret', 'taux_interet', 'pourcentage_pret_revenu', 'duree_historique_credit']
+    categorical_features = ['propriete', 'motif_pret', 'notation_pret', 'historique_defaut']
+
+    # Transformer numérique : MinMaxScaler
+    numeric_transformer = MinMaxScaler()
+
+    # Transformer catégorien : OneHotEncoder (équivalent de get_dummies)
+    categorical_transformer = OneHotEncoder(handle_unknown='ignore')
+
+    preprocesseur = ColumnTransformer(
+        transformers=[("num", numeric_transformer, numeric_features), ("cat", categorical_transformer, categorical_features)]
+    )
+
+    # Pipeline complète avec la régression logistique
+    model = Pipeline(steps=[("preprocessor", preprocesseur), ("classifier", LogisticRegression())])
+
+    # Diviser les données en ensemble d'apprentissage et de test
+    X = data[numeric_features + categorical_features]  # Caractéristiques
+    y = data['statut_pret']  # Étiquette
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Entraîner le modèle sur l'ensemble d'apprentissage
+    model.fit(X_train, y_train)
+
+    # Sauvegarder le modèle
+    joblib.dump(model, 'votre_modele.pkl')
 
 # Charger le modèle
-model = load_model()
+def load_model():
+    model = joblib.load('votre_modele.pkl')  # Charger le modèle sauvegardé
+    return model
 
-vars_sessions = ["prediction_score", "prediction_status", "prediction_model", "prediction_proba"]
-for v in vars_sessions:
-    if v not in st.session_state:
-        st.session_state[v] = None
+# Fonction de prédiction
+def predict(model, input_data):
+    prediction = model.predict([input_data])  # Faire une prédiction avec le modèle
+    return prediction
 
-# Charger le logo et l'image d'arrière-plan
-logo = Image.open('media/capgemini-symbol.png')
-background = 'media/capgemini_streamlit.jfif'
-
-# Convertir l'image d'arrière-plan en base64
-with open(background, "rb") as image_file:
-    encoded_string = base64.b64encode(image_file.read()).decode()
-
-# Afficher le logo réduit à gauche
-st.sidebar.image(logo, use_container_width=True, width=100)
-
-# Appliquer l'image d'arrière-plan à toute la page
-st.markdown(
-    f"""
-    <style>
-    .stApp {{
-        background-image: url("data:image/jpg;base64,{encoded_string}");
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        color: #ffffff; /* Blanc pour le texte */
-        font-family: 'Arial', sans-serif; /* Police plus moderne */
-    }}
-    .stSidebar {{
-        background-color: #ffffff; /* Blanc */
-    }}
-    .stHeader {{
-        color: #000000; /* Noir pour le texte de l'en-tête */
-        font-size: 2em; /* Taille de police pour l'en-tête */
-        font-weight: bold; /* En-tête en gras */
-        text-align: center; /* Centrer l'en-tête */
-        margin-top: 20px; /* Marge supérieure pour espacer l'en-tête */
-        margin-bottom: 20px; /* Marge inférieure pour espacer l'en-tête */
-    }}
-    .stForm {{
-        background-color: rgba(51, 51, 51, 0.8); /* Fond noir clair avec transparence pour le formulaire */
-        padding: 20px; /* Espacement intérieur pour le formulaire */
-        border-radius: 10px; /* Coins arrondis pour le formulaire */
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); /* Ombre pour le formulaire */
-        color: #ffffff; /* Blanc pour le texte du formulaire */
-    }}
-    .stForm input, .stForm label {{
-        color: #ffffff; /* Blanc pour les entrées et les labels */
-    }}
-    .stForm button {{
-        background-color: #000000; /* Noir pour le bouton */
-        color: #ffffff; /* Blanc pour le texte du bouton */
-        border: none; /* Pas de bordure */
-        padding: 10px 20px; /* Espacement intérieur pour le bouton */
-        border-radius: 5px; /* Coins arrondis pour le bouton */
-        cursor: pointer; /* Curseur en forme de main */
-    }}
-    .stForm button:hover {{
-        background-color: #333333; /* Noir clair pour le bouton au survol */
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-# En-tête de l'application
-st.markdown("<div class='stHeader'>Application de prédiction de crédit</div>", unsafe_allow_html=True)
-st.markdown("<div class='stHeader'>Bienvenue sur notre application de prédiction de crédit !</div>", unsafe_allow_html=True)
-
-# Formulaire de saisie des données
-with st.form("Formulaire de saisie"):
-    st.write("Formulaire")
-    age = st.number_input("Age")
-    anciennete = st.number_input("Anciennete")
-    notation_pret = st.selectbox("notation_pret", options=["A", "B", "C", "D", "E"], index=0)
-    montant_pret = st.number_input("Montant Pret")
-    pourcentage_pret_revenu = st.number_input("Pourcentage Pret Revenu")
-    taux_interet = st.number_input("Taux d'interet")
-    propriete = st.selectbox("propriete", options=["Locataire", "Proprietaire", "Hypotheque", "Autres"], index=0)
-    motif_pret = st.selectbox("motif_pret", options=["Personnel", "Education", "Entreprendre", "Medical", "Travaux_maison", "Regroupement_dettes"], index=0)
-    historique_defaut = st.selectbox("historique_defaut", options=["N", "Y"], index=0)
-    revenu = st.number_input("Revenue")
-    duree_historique_credit = st.number_input("Duree historique credit")
-
-    valide = st.form_submit_button('Valider')
-
-    if valide:
-        features = [age, anciennete, notation_pret, montant_pret, pourcentage_pret_revenu, taux_interet, propriete, motif_pret, historique_defaut, revenu, duree_historique_credit]
-        input_data = pd.DataFrame(features).transpose()
-        input_data.columns = ["age", "anciennete", "notation_pret", "montant_pret", "pourcentage_pret_revenu", "taux_interet", "propriete", "motif_pret", "historique_defaut", "revenu", "duree_historique_credit"]
-
-        result = model.predict(input_data)
-        proba = model.predict_proba(input_data)[:, 1]
-
-        st.session_state['prediction_score'] = result[0]
-        st.session_state['prediction_status'] = "Approuvé" if result[0] == 1 else "Refusé"
-        st.session_state['prediction_model'] = "Régression Logistique"
-        st.session_state['prediction_proba'] = proba
-
-# Formulaire de réponse
-if st.session_state['prediction_score'] is not None:
-    with st.form("Formulaire de reponse"):
-        st.write("Resultat")
-        cols = st.columns(3)
-        score = cols[0].text(f"score: {st.session_state['prediction_proba']}")
-        status = cols[1].text(f"status: {st.session_state['prediction_status']}")
-        modele = cols[2].text(st.session_state['prediction_model'])
-        commentaire = st.text_input("Commentaire")
-        validate = st.form_submit_button("Envoyer")
+# Entraîner et sauvegarder le modèle (à exécuter une seule fois)
+train_and_save_model()
