@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
-from model import load_model, predict
+from model_utils import load_model, predict
 from PIL import Image
 import base64
+import os
 
 # Charger le modèle
 model = load_model()
@@ -13,8 +14,11 @@ for v in vars_sessions:
         st.session_state[v] = None
 
 # Charger le logo et l'image d'arrière-plan
-logo = Image.open(r'C:\Users\fdiakhat\OneDrive - Capgemini\Desktop\MIRA\Test1\media\capgemini-symbol.png')
-background = r'C:\Users\fdiakhat\OneDrive - Capgemini\Desktop\MIRA\Test1\media\capgemini_streamlit.jfif'
+logo_path = os.path.join('media', 'capgemini-symbol.png')
+background_path = os.path.join('media', 'capgemini_streamlit.jfif')
+
+logo = Image.open(logo_path)
+background = background_path
 
 # Convertir l'image d'arrière-plan en base64
 with open(background, "rb") as image_file:
@@ -73,7 +77,7 @@ st.markdown(
 )
 
 # En-tête de l'application
-st.markdown("<div class='stHeader'>MIRA</div>", unsafe_allow_html=True)
+st.markdown("<div class='stHeader'>Application de prédiction de crédit</div>", unsafe_allow_html=True)
 st.markdown("<div class='stHeader'>Bienvenue sur notre application de prédiction de crédit !</div>", unsafe_allow_html=True)
 
 # Formulaire de saisie des données
@@ -102,7 +106,7 @@ with st.form("Formulaire de saisie"):
         proba = model.predict_proba(input_data)[:, 1]
 
         st.session_state['prediction_score'] = result[0]
-        st.session_state['prediction_status'] = "Approuvé" if result[0] == 1 else "Refusé"
+        st.session_state['prediction_status'] = "Approuvé" si result[0] == 1 sinon "Refusé"
         st.session_state['prediction_model'] = "Régression Logistique"
         st.session_state['prediction_proba'] = proba
 
