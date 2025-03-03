@@ -83,7 +83,7 @@ st.markdown(
 )
 
 # En-tête de l'application
-st.markdown("<div class='stHeader'>Application de prédiction de crédit</div>", unsafe_allow_html=True)
+st.markdown("<div class='stHeader'> MIRA </div>", unsafe_allow_html=True)
 st.markdown("<div class='stHeader'>Bienvenue sur notre application de prédiction de crédit !</div>", unsafe_allow_html=True)
 
 # Formulaire de saisie des données
@@ -113,7 +113,7 @@ with st.form("Formulaire de saisie"):
         proba = model.predict_proba(input_data)[:, 1]
 
         st.session_state['prediction_score'] = result[0]
-        st.session_state['prediction_status'] = "Approuvé" if result[0] ==  else "Refusé"
+        st.session_state['prediction_status'] = "Approuvé" if result[0]  else "Refusé"
         st.session_state['prediction_model'] = "Régression Logistique"
         st.session_state['prediction_proba'] = proba
 st.markdown("</div>", unsafe_allow_html=True)
